@@ -40,7 +40,6 @@ fun AppointmentManagerTheme(
                 dynamicLightColorScheme(context)
             }
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
