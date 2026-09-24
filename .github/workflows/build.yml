@@ -25,11 +25,27 @@ jobs:
           java-version: "17"
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK 34
-        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
+      - name: Setup Android SDK manually
+        env:
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          # إضافة مسارات SDK المحتملة إلى PATH
+          export PATH=$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/cmdline-tools/16.0/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
+          
+          # البحث عن أي sdkmanager متاح
+          SDKMANAGER=$(find $ANDROID_SDK_ROOT -name sdkmanager -type f | head -n 1)
+          if [ -z "$SDKMANAGER" ]; then
+            echo "ERROR: sdkmanager not found under $ANDROID_SDK_ROOT"
+            exit 1
+          fi
+          
+          echo "Using sdkmanager: $SDKMANAGER"
+          
+          # قبول التراخيص تلقائياً
+          yes | $SDKMANAGER --licenses || true
+          
+          # تثبيت المكونات المطلوبة فقط
+          $SDKMANAGER "platforms;android-34" "build-tools;34.0.0"
 
       - name: Download Gradle Wrapper JAR
         run: |
@@ -42,6 +58,9 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: ./gradlew assembleDebug --no-daemon
 
       - name: Upload Debug APK
