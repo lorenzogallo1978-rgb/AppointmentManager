@@ -1,6 +1,7 @@
 package com.appointmentmanager.app
 
 import android.app.Application
+import android.util.Log
 import androidx.work.Configuration
 import com.appointmentmanager.app.data.AppDatabase
 import com.appointmentmanager.app.data.AppointmentRepository
@@ -15,7 +16,7 @@ class AppointmentManagerApplication : Application(), Configuration.Provider {
     }
 
     val appointmentRepository: AppointmentRepository by lazy {
-        AppointmentRepository(database.appointmentDao())
+        AppointmentRepository(database)
     }
 
     val settingsDataStore: SettingsDataStore by lazy {
@@ -38,6 +39,6 @@ class AppointmentManagerApplication : Application(), Configuration.Provider {
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .setMinimumLoggingLevel(Log.INFO)
             .build()
 }
