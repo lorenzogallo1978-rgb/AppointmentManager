@@ -23,30 +23,41 @@
     <string name="back">رجوع</string>
     <string name="close">إغلاق</string>
     <string name="confirm">تأكيد</string>
+    <string name="copy">نسخ</string>
 
     <string name="required_name_error">الاسم الكامل مطلوب</string>
     <string name="required_appointment_date_error">تاريخ الموعد مطلوب</string>
+    <string name="save_error">تعذر حفظ البيانات. حاول مرة أخرى.</string>
+    <string name="delete_error">تعذر حذف البيانات. حاول مرة أخرى.</string>
+    <string name="person_not_found">لم يتم العثور على بيانات هذا الشخص.</string>
+    <string name="loading">جارٍ تحميل البيانات…</string>
 
     <string name="export_json">تصدير JSON</string>
     <string name="import_json">استيراد JSON</string>
     <string name="toggle_dark_mode">تبديل الوضع الليلي</string>
+    <string name="system_theme">حسب النظام</string>
+    <string name="light_theme">الوضع الفاتح</string>
+    <string name="dark_theme">الوضع الداكن</string>
     <string name="more_options">المزيد من الخيارات</string>
 
     <string name="export_file_name">appointment_manager_backup.json</string>
     <string name="export_success">تم تصدير النسخة الاحتياطية بنجاح</string>
     <string name="export_error">حدث خطأ أثناء تصدير الملف</string>
     <string name="import_success">تم استيراد البيانات بنجاح</string>
-    <string name="import_error">تعذر استيراد الملف. تأكد من أن الملف صالح وبصيغة JSON صحيحة.</string>
+    <string name="import_error">تعذر قراءة الملف. تأكد من اختيار ملف صالح.</string>
     <string name="import_confirmation_title">تأكيد الاستيراد</string>
     <string name="import_confirmation_message">سيتم استبدال البيانات الحالية، هل تريد المتابعة؟</string>
+    <string name="invalid_backup_format">ملف النسخة الاحتياطية تالف أو لا يحتوي على بيانات صالحة بصيغة JSON.</string>
 
     <string name="delete_confirmation_title">تأكيد الحذف</string>
     <string name="delete_confirmation_message">هل تريد حذف بيانات هذا الشخص نهائياً؟</string>
 
     <string name="copied">تم النسخ</string>
-    <string name="copy">نسخ</string>
     <string name="show_password">إظهار كلمة السر</string>
     <string name="hide_password">إخفاء كلمة السر</string>
+    <string name="password_hidden">••••</string>
+    <string name="empty_value">—</string>
+    <string name="no_notes">لا توجد ملاحظات</string>
 
     <string name="no_appointments">لا توجد مواعيد حالياً</string>
     <string name="no_search_results">لا توجد نتائج مطابقة</string>
@@ -54,6 +65,7 @@
     <string name="today">الموعد اليوم</string>
     <string name="tomorrow">الموعد غداً</string>
     <string name="days_overdue">مضى %1$d يوم</string>
+    <string name="labeled_value">%1$s: %2$s</string>
 
     <string name="notification_channel_name">تذكيرات المواعيد</string>
     <string name="notification_channel_description">إشعارات لتذكيرك بالمواعيد القادمة</string>
@@ -63,10 +75,4 @@
     <string name="select_date">اختر التاريخ</string>
     <string name="birth_date_not_set">غير محدد</string>
     <string name="appointment_date_not_set">غير محدد</string>
-
-    <string name="system_theme">حسب النظام</string>
-    <string name="light_theme">الوضع الفاتح</string>
-    <string name="dark_theme">الوضع الداكن</string>
-
-    <string name="invalid_backup_format">ملف النسخة الاحتياطية لا يحتوي على بيانات صالحة.</string>
 </resources>
