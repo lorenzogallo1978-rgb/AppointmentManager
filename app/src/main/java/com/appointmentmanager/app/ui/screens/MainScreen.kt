@@ -65,87 +65,46 @@ fun MainScreen(
 ) {
     val appointments by viewModel.appointments.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-
-    var menuExpanded by remember {
-        mutableStateOf(false)
-    }
+    var menuExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.main_title)
-                    )
-                },
+                title = { Text(stringResource(R.string.main_title)) },
                 actions = {
-                    IconButton(
-                        onClick = {
-                            menuExpanded = true
-                        }
-                    ) {
+                    IconButton(onClick = { menuExpanded = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = stringResource(
-                                R.string.more_options
-                            )
+                            contentDescription = stringResource(R.string.more_options)
                         )
                     }
 
                     DropdownMenu(
                         expanded = menuExpanded,
-                        onDismissRequest = {
-                            menuExpanded = false
-                        }
+                        onDismissRequest = { menuExpanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(
-                                        R.string.export_json
-                                    )
-                                )
-                            },
+                            text = { Text(stringResource(R.string.export_json)) },
                             leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.FileDownload,
-                                    contentDescription = null
-                                )
+                                Icon(Icons.Default.FileDownload, contentDescription = null)
                             },
                             onClick = {
                                 menuExpanded = false
                                 onExport()
                             }
                         )
-
                         DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(
-                                        R.string.import_json
-                                    )
-                                )
-                            },
+                            text = { Text(stringResource(R.string.import_json)) },
                             leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.FileUpload,
-                                    contentDescription = null
-                                )
+                                Icon(Icons.Default.FileUpload, contentDescription = null)
                             },
                             onClick = {
                                 menuExpanded = false
                                 onImport()
                             }
                         )
-
                         DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(
-                                        R.string.toggle_dark_mode
-                                    )
-                                )
-                            },
+                            text = { Text(stringResource(R.string.toggle_dark_mode)) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = if (isDarkTheme) {
@@ -161,20 +120,10 @@ fun MainScreen(
                                 onToggleDarkMode()
                             }
                         )
-
                         DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(
-                                        R.string.system_theme
-                                    )
-                                )
-                            },
+                            text = { Text(stringResource(R.string.system_theme)) },
                             leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.BrightnessAuto,
-                                    contentDescription = null
-                                )
+                                Icon(Icons.Default.BrightnessAuto, contentDescription = null)
                             },
                             onClick = {
                                 menuExpanded = false
@@ -186,14 +135,10 @@ fun MainScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddAppointment
-            ) {
+            FloatingActionButton(onClick = onAddAppointment) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(
-                        R.string.add_appointment
-                    )
+                    contentDescription = stringResource(R.string.add_appointment)
                 )
             }
         }
@@ -208,34 +153,16 @@ fun MainScreen(
                 onValueChange = viewModel::updateSearchQuery,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp,
-                        vertical = 12.dp
-                    ),
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 singleLine = true,
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search_hint)
-                    )
-                },
+                placeholder = { Text(stringResource(R.string.search_hint)) },
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null
-                    )
+                    Icon(Icons.Default.Search, contentDescription = null)
                 },
-                keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Search
-                )
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search)
             )
 
             if (appointments.isEmpty()) {
-                val emptyMessage = if (searchQuery.isBlank()) {
-                    stringResource(R.string.no_appointments)
-                } else {
-                    stringResource(R.string.no_search_results)
-                }
-
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -243,7 +170,11 @@ fun MainScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = emptyMessage,
+                        text = if (searchQuery.isBlank()) {
+                            stringResource(R.string.no_appointments)
+                        } else {
+                            stringResource(R.string.no_search_results)
+                        },
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -260,17 +191,11 @@ fun MainScreen(
                 ) {
                     items(
                         items = appointments,
-                        key = { appointment ->
-                            appointment.id
-                        }
+                        key = { it.id }
                     ) { appointment ->
                         AppointmentCard(
                             appointment = appointment,
-                            onClick = {
-                                onOpenAppointment(
-                                    appointment.id
-                                )
-                            }
+                            onClick = { onOpenAppointment(appointment.id) }
                         )
                     }
                 }
@@ -284,85 +209,54 @@ private fun AppointmentCard(
     appointment: AppointmentEntity,
     onClick: () -> Unit
 ) {
-    val daysRemaining = DateUtils.daysUntil(
-        appointment.appointmentDate
-    )
-
+    val daysRemaining = DateUtils.daysUntil(appointment.appointmentDate)
     val remainingText = when {
-        daysRemaining < 0L -> {
-            stringResource(
-                R.string.days_overdue,
-                (-daysRemaining).toInt()
-            )
-        }
-
-        daysRemaining == 0L -> {
-            stringResource(R.string.today)
-        }
-
-        daysRemaining == 1L -> {
-            stringResource(R.string.tomorrow)
-        }
-
-        else -> {
-            stringResource(
-                R.string.days_remaining,
-                daysRemaining.toInt()
-            )
-        }
+        daysRemaining < 0L -> stringResource(
+            R.string.days_overdue,
+            (-daysRemaining).toInt()
+        )
+        daysRemaining == 0L -> stringResource(R.string.today)
+        daysRemaining == 1L -> stringResource(R.string.tomorrow)
+        else -> stringResource(
+            R.string.days_remaining,
+            daysRemaining.toInt()
+        )
     }
 
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = appointmentCardColor(
-                daysRemaining
-            )
+            containerColor = appointmentCardColor(daysRemaining)
         )
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = appointment.fullName,
                 style = MaterialTheme.typography.titleMedium
             )
-
-            Spacer(
-                modifier = Modifier.height(6.dp)
+            Spacer(modifier = Modifier.height(6.dp))
+            InfoLine(
+                label = stringResource(R.string.identity_number),
+                value = appointment.identityNumber
             )
-
-            Text(
-                text = stringResource(
-                    R.string.labeled_value,
-                    stringResource(R.string.identity_number),
-                    appointment.identityNumber.ifBlank {
-                        stringResource(R.string.empty_value)
-                    }
-                ),
-                style = MaterialTheme.typography.bodyMedium
+            InfoLine(
+                label = stringResource(R.string.appointment_date),
+                value = DateUtils.formatDate(appointment.appointmentDate)
             )
-
-            Spacer(
-                modifier = Modifier.height(4.dp)
+            InfoLine(
+                label = stringResource(R.string.mhrs_password),
+                value = appointment.mhrsPassword
             )
-
-            Text(
-                text = stringResource(
-                    R.string.labeled_value,
-                    stringResource(R.string.appointment_date),
-                    DateUtils.formatDate(
-                        appointment.appointmentDate
-                    )
-                ),
-                style = MaterialTheme.typography.bodyMedium
+            InfoLine(
+                label = stringResource(R.string.edevlet_password),
+                value = appointment.eDevletPassword
             )
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
+            InfoLine(
+                label = stringResource(R.string.enabiz_password),
+                value = appointment.eNabizPassword
             )
-
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = remainingText,
                 style = MaterialTheme.typography.labelLarge
@@ -372,26 +266,24 @@ private fun AppointmentCard(
 }
 
 @Composable
-private fun appointmentCardColor(
-    daysRemaining: Long
-): Color {
+private fun InfoLine(label: String, value: String) {
+    Text(
+        text = stringResource(
+            R.string.labeled_value,
+            label,
+            value.ifBlank { stringResource(R.string.empty_value) }
+        ),
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
+private fun appointmentCardColor(daysRemaining: Long): Color {
     val colors = MaterialTheme.colorScheme
-
     return when {
-        daysRemaining < 0L -> {
-            colors.surfaceVariant
-        }
-
-        daysRemaining <= 1L -> {
-            colors.errorContainer
-        }
-
-        daysRemaining == 2L -> {
-            colors.tertiaryContainer
-        }
-
-        else -> {
-            colors.secondaryContainer
-        }
+        daysRemaining < 0L -> colors.surfaceVariant
+        daysRemaining <= 1L -> colors.errorContainer
+        daysRemaining == 2L -> colors.tertiaryContainer
+        else -> colors.secondaryContainer
     }
 }
