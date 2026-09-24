@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.appointmentmanager.app.R
 import com.appointmentmanager.app.data.AppointmentEntity
@@ -60,20 +59,17 @@ fun AddEditAppointmentScreen(
             viewModel.observeAppointment(appointmentId)
         }
     }
-
     val appointment by appointmentFlow.collectAsState(initial = null)
 
     if (appointmentId != null && appointment == null) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = {
-                        Text(stringResource(R.string.edit_appointment))
-                    },
+                    title = { Text(stringResource(R.string.edit_appointment)) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
+                                Icons.Default.ArrowBack,
                                 contentDescription = stringResource(R.string.back)
                             )
                         }
@@ -132,16 +128,9 @@ private fun AppointmentForm(
     var appointmentDate by remember(appointment?.id) {
         mutableStateOf(appointment?.appointmentDate)
     }
-
-    var showBirthDatePicker by remember {
-        mutableStateOf(false)
-    }
-    var showAppointmentDatePicker by remember {
-        mutableStateOf(false)
-    }
-    var validationAttempted by remember {
-        mutableStateOf(false)
-    }
+    var showBirthDatePicker by remember { mutableStateOf(false) }
+    var showAppointmentDatePicker by remember { mutableStateOf(false) }
+    var validationAttempted by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -160,7 +149,7 @@ private fun AppointmentForm(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -178,17 +167,12 @@ private fun AppointmentForm(
         ) {
             OutlinedTextField(
                 value = fullName,
-                onValueChange = {
-                    fullName = it
-                },
+                onValueChange = { fullName = it },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                label = {
-                    Text(stringResource(R.string.full_name))
-                },
+                label = { Text(stringResource(R.string.full_name)) },
                 isError = validationAttempted && fullName.isBlank()
             )
-
             if (validationAttempted && fullName.isBlank()) {
                 Text(
                     text = stringResource(R.string.required_name_error),
@@ -199,66 +183,44 @@ private fun AppointmentForm(
 
             OutlinedTextField(
                 value = identityNumber,
-                onValueChange = {
-                    identityNumber = it
-                },
+                onValueChange = { identityNumber = it },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                label = {
-                    Text(stringResource(R.string.identity_number))
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number
-                )
+                label = { Text(stringResource(R.string.identity_number)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
-            PasswordInput(
+            VisiblePasswordField(
                 label = stringResource(R.string.mhrs_password),
                 value = mhrsPassword,
-                onValueChange = {
-                    mhrsPassword = it
-                }
+                onValueChange = { mhrsPassword = it }
             )
-
-            PasswordInput(
+            VisiblePasswordField(
                 label = stringResource(R.string.edevlet_password),
                 value = eDevletPassword,
-                onValueChange = {
-                    eDevletPassword = it
-                }
+                onValueChange = { eDevletPassword = it }
             )
-
-            PasswordInput(
+            VisiblePasswordField(
                 label = stringResource(R.string.enabiz_password),
                 value = eNabizPassword,
-                onValueChange = {
-                    eNabizPassword = it
-                }
+                onValueChange = { eNabizPassword = it }
             )
 
             DateSelectionButton(
                 label = stringResource(R.string.birth_date),
                 selectedDateMillis = birthDate,
                 notSetText = stringResource(R.string.birth_date_not_set),
-                onClick = {
-                    showBirthDatePicker = true
-                }
+                onClick = { showBirthDatePicker = true }
             )
-
             DateSelectionButton(
                 label = stringResource(R.string.appointment_date),
                 selectedDateMillis = appointmentDate,
                 notSetText = stringResource(R.string.appointment_date_not_set),
-                onClick = {
-                    showAppointmentDatePicker = true
-                }
+                onClick = { showAppointmentDatePicker = true }
             )
-
             if (validationAttempted && appointmentDate == null) {
                 Text(
-                    text = stringResource(
-                        R.string.required_appointment_date_error
-                    ),
+                    text = stringResource(R.string.required_appointment_date_error),
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -266,38 +228,24 @@ private fun AppointmentForm(
 
             OutlinedTextField(
                 value = notes,
-                onValueChange = {
-                    notes = it
-                },
+                onValueChange = { notes = it },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 4,
-                label = {
-                    Text(stringResource(R.string.notes))
-                }
+                label = { Text(stringResource(R.string.notes)) }
             )
 
             Spacer(modifier = Modifier.height(4.dp))
-
             Button(
                 onClick = {
                     validationAttempted = true
-
-                    if (
-                        fullName.isNotBlank() &&
-                        appointmentDate != null
-                    ) {
-                        val selectedAppointmentDate = appointmentDate
-                            ?: return@Button
-
-                        val originalAppointment = appointment
+                    val selectedAppointmentDate = appointmentDate
+                    if (fullName.isNotBlank() && selectedAppointmentDate != null) {
                         val shouldKeepNotified =
-                            originalAppointment?.notified == true &&
-                                originalAppointment.appointmentDate ==
-                                selectedAppointmentDate
-
+                            appointment?.notified == true &&
+                                appointment.appointmentDate == selectedAppointmentDate
                         onSave(
                             AppointmentEntity(
-                                id = originalAppointment?.id ?: 0L,
+                                id = appointment?.id ?: 0L,
                                 fullName = fullName.trim(),
                                 identityNumber = identityNumber.trim(),
                                 mhrsPassword = mhrsPassword,
@@ -321,24 +269,19 @@ private fun AppointmentForm(
     if (showBirthDatePicker) {
         AppointmentDatePickerDialog(
             initialDateMillis = birthDate,
-            onDismiss = {
-                showBirthDatePicker = false
-            },
-            onDateSelected = { selectedMillis ->
-                birthDate = selectedMillis
+            onDismiss = { showBirthDatePicker = false },
+            onDateSelected = {
+                birthDate = it
                 showBirthDatePicker = false
             }
         )
     }
-
     if (showAppointmentDatePicker) {
         AppointmentDatePickerDialog(
             initialDateMillis = appointmentDate,
-            onDismiss = {
-                showAppointmentDatePicker = false
-            },
-            onDateSelected = { selectedMillis ->
-                appointmentDate = selectedMillis
+            onDismiss = { showAppointmentDatePicker = false },
+            onDateSelected = {
+                appointmentDate = it
                 showAppointmentDatePicker = false
             }
         )
@@ -346,7 +289,7 @@ private fun AppointmentForm(
 }
 
 @Composable
-private fun PasswordInput(
+private fun VisiblePasswordField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit
@@ -356,13 +299,8 @@ private fun PasswordInput(
         onValueChange = onValueChange,
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
-        label = {
-            Text(label)
-        },
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password
-        )
+        label = { Text(label) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
     )
 }
 
@@ -373,29 +311,12 @@ private fun DateSelectionButton(
     notSetText: String,
     onClick: () -> Unit
 ) {
-    val displayedDate = selectedDateMillis?.let {
-        DateUtils.formatDate(it)
-    } ?: notSetText
-
-    OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    val displayedDate = selectedDateMillis?.let(DateUtils::formatDate) ?: notSetText
+    OutlinedButton(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row {
-            Icon(
-                imageVector = Icons.Default.DateRange,
-                contentDescription = null
-            )
-
+            Icon(Icons.Default.DateRange, contentDescription = null)
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-
-            Text(
-                stringResource(
-                    R.string.labeled_value,
-                    label,
-                    displayedDate
-                )
-            )
+            Text(stringResource(R.string.labeled_value, label, displayedDate))
         }
     }
 }
@@ -410,16 +331,13 @@ private fun AppointmentDatePickerDialog(
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = initialDateMillis
     )
-
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(
                 onClick = {
-                    datePickerState.selectedDateMillis?.let { selectedMillis ->
-                        onDateSelected(
-                            DateUtils.normalizeEpochMillis(selectedMillis)
-                        )
+                    datePickerState.selectedDateMillis?.let {
+                        onDateSelected(DateUtils.normalizeEpochMillis(it))
                     }
                     onDismiss()
                 }
@@ -433,11 +351,6 @@ private fun AppointmentDatePickerDialog(
             }
         }
     ) {
-        DatePicker(
-            state = datePickerState,
-            title = {
-                Text(stringResource(R.string.select_date))
-            }
-        )
+        DatePicker(state = datePickerState)
     }
 }
