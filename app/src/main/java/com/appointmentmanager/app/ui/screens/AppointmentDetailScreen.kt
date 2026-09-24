@@ -18,8 +18,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -61,20 +59,16 @@ fun AppointmentDetailScreen(
         viewModel.observeAppointment(appointmentId)
     }
     val appointment by appointmentFlow.collectAsState(initial = null)
-    var showDeleteConfirmation by remember {
-        mutableStateOf(false)
-    }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(stringResource(R.string.appointment_details))
-                },
+                title = { Text(stringResource(R.string.appointment_details)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            Icons.Default.ArrowBack,
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -93,29 +87,20 @@ fun AppointmentDetailScreen(
                         onClick = onEdit,
                         modifier = Modifier.weight(1f)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = null
-                        )
+                        Icon(Icons.Default.Edit, contentDescription = null)
                         Text(
                             text = stringResource(R.string.edit),
                             modifier = Modifier.padding(start = 6.dp)
                         )
                     }
-
                     Button(
-                        onClick = {
-                            showDeleteConfirmation = true
-                        },
+                        onClick = { showDeleteConfirmation = true },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error
                         )
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = null
-                        )
+                        Icon(Icons.Default.Delete, contentDescription = null)
                         Text(
                             text = stringResource(R.string.delete),
                             modifier = Modifier.padding(start = 6.dp)
@@ -126,7 +111,6 @@ fun AppointmentDetailScreen(
         }
     ) { contentPadding ->
         val currentAppointment = appointment
-
         if (currentAppointment == null) {
             Column(
                 modifier = Modifier
@@ -151,41 +135,31 @@ fun AppointmentDetailScreen(
                     text = currentAppointment.fullName,
                     style = MaterialTheme.typography.headlineSmall
                 )
-
                 CopyableDetailRow(
                     label = stringResource(R.string.identity_number),
                     value = currentAppointment.identityNumber
                 )
-
                 DetailValueRow(
                     label = stringResource(R.string.birth_date),
-                    value = currentAppointment.birthDate?.let {
-                        DateUtils.formatDate(it)
-                    } ?: stringResource(R.string.birth_date_not_set)
+                    value = currentAppointment.birthDate?.let(DateUtils::formatDate)
+                        ?: stringResource(R.string.birth_date_not_set)
                 )
-
                 DetailValueRow(
                     label = stringResource(R.string.appointment_date),
-                    value = DateUtils.formatDate(
-                        currentAppointment.appointmentDate
-                    )
+                    value = DateUtils.formatDate(currentAppointment.appointmentDate)
                 )
-
-                PasswordDetailRow(
+                CopyableDetailRow(
                     label = stringResource(R.string.mhrs_password),
                     value = currentAppointment.mhrsPassword
                 )
-
-                PasswordDetailRow(
+                CopyableDetailRow(
                     label = stringResource(R.string.edevlet_password),
                     value = currentAppointment.eDevletPassword
                 )
-
-                PasswordDetailRow(
+                CopyableDetailRow(
                     label = stringResource(R.string.enabiz_password),
                     value = currentAppointment.eNabizPassword
                 )
-
                 DetailValueRow(
                     label = stringResource(R.string.notes),
                     value = currentAppointment.notes.ifBlank {
@@ -198,15 +172,9 @@ fun AppointmentDetailScreen(
 
     if (showDeleteConfirmation) {
         AlertDialog(
-            onDismissRequest = {
-                showDeleteConfirmation = false
-            },
-            title = {
-                Text(stringResource(R.string.delete_confirmation_title))
-            },
-            text = {
-                Text(stringResource(R.string.delete_confirmation_message))
-            },
+            onDismissRequest = { showDeleteConfirmation = false },
+            title = { Text(stringResource(R.string.delete_confirmation_title)) },
+            text = { Text(stringResource(R.string.delete_confirmation_message)) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -218,11 +186,7 @@ fun AppointmentDetailScreen(
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteConfirmation = false
-                    }
-                ) {
+                TextButton(onClick = { showDeleteConfirmation = false }) {
                     Text(stringResource(R.string.cancel))
                 }
             }
@@ -231,42 +195,24 @@ fun AppointmentDetailScreen(
 }
 
 @Composable
-private fun DetailValueRow(
-    label: String,
-    value: String
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+private fun DetailValueRow(label: String, value: String) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary
             )
-
             Spacer(modifier = Modifier.padding(top = 4.dp))
-
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Text(text = value, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
 
 @Composable
-private fun CopyableDetailRow(
-    label: String,
-    value: String
-) {
+private fun CopyableDetailRow(label: String, value: String) {
     val context = LocalContext.current
-
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -283,28 +229,19 @@ private fun CopyableDetailRow(
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
-
                 Spacer(modifier = Modifier.padding(top = 4.dp))
-
                 Text(
-                    text = value.ifBlank {
-                        stringResource(R.string.empty_value)
-                    },
+                    text = value.ifBlank { stringResource(R.string.empty_value) },
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-
             IconButton(
                 onClick = {
-                    copyToClipboard(
-                        context = context,
-                        label = label,
-                        value = value
-                    )
+                    copyToClipboard(context, label, value)
                 }
             ) {
                 Icon(
-                    imageVector = Icons.Default.ContentCopy,
+                    Icons.Default.ContentCopy,
                     contentDescription = stringResource(R.string.copy)
                 )
             }
@@ -312,102 +249,9 @@ private fun CopyableDetailRow(
     }
 }
 
-@Composable
-private fun PasswordDetailRow(
-    label: String,
-    value: String
-) {
-    val context = LocalContext.current
-    var passwordVisible by remember {
-        mutableStateOf(false)
-    }
-
-    val displayedValue = when {
-        value.isBlank() -> stringResource(R.string.empty_value)
-        passwordVisible -> value
-        else -> stringResource(R.string.password_hidden)
-    }
-
-    Card(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(vertical = 8.dp)
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Spacer(modifier = Modifier.padding(top = 4.dp))
-
-                Text(
-                    text = displayedValue,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-
-            IconButton(
-                onClick = {
-                    passwordVisible = !passwordVisible
-                }
-            ) {
-                Icon(
-                    imageVector = if (passwordVisible) {
-                        Icons.Default.VisibilityOff
-                    } else {
-                        Icons.Default.Visibility
-                    },
-                    contentDescription = stringResource(
-                        if (passwordVisible) {
-                            R.string.hide_password
-                        } else {
-                            R.string.show_password
-                        }
-                    )
-                )
-            }
-
-            IconButton(
-                onClick = {
-                    copyToClipboard(
-                        context = context,
-                        label = label,
-                        value = value
-                    )
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ContentCopy,
-                    contentDescription = stringResource(R.string.copy)
-                )
-            }
-        }
-    }
-}
-
-private fun copyToClipboard(
-    context: Context,
-    label: String,
-    value: String
-) {
-    val clipboardManager = context.getSystemService(
-        Context.CLIPBOARD_SERVICE
-    ) as ClipboardManager
-
-    clipboardManager.setPrimaryClip(
-        ClipData.newPlainText(label, value)
-    )
-
+private fun copyToClipboard(context: Context, label: String, value: String) {
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    clipboardManager.setPrimaryClip(ClipData.newPlainText(label, value))
     Toast.makeText(
         context,
         context.getString(R.string.copied),
