@@ -1,10 +1,13 @@
 package com.appointmentmanager.app.data
 
+import androidx.room.withTransaction
 import kotlinx.coroutines.flow.Flow
 
 class AppointmentRepository(
-    private val appointmentDao: AppointmentDao
+    private val database: AppDatabase
 ) {
+    private val appointmentDao: AppointmentDao
+        get() = database.appointmentDao()
 
     fun observeAppointments(query: String): Flow<List<AppointmentEntity>> {
         return appointmentDao.observeAppointments(query.trim())
@@ -12,6 +15,10 @@ class AppointmentRepository(
 
     fun observeAppointmentById(id: Long): Flow<AppointmentEntity?> {
         return appointmentDao.observeAppointmentById(id)
+    }
+
+    suspend fun getAppointmentById(id: Long): AppointmentEntity? {
+        return appointmentDao.getAppointmentById(id)
     }
 
     suspend fun insert(appointment: AppointmentEntity): Long {
@@ -22,8 +29,8 @@ class AppointmentRepository(
         appointmentDao.update(appointment)
     }
 
-    suspend fun delete(appointment: AppointmentEntity) {
-        appointmentDao.delete(appointment)
+    suspend fun deleteById(id: Long) {
+        appointmentDao.deleteById(id)
     }
 
     suspend fun getAllAppointments(): List<AppointmentEntity> {
@@ -31,13 +38,17 @@ class AppointmentRepository(
     }
 
     suspend fun replaceAllAppointments(appointments: List<AppointmentEntity>) {
-        appointmentDao.deleteAll()
-
-        val normalizedAppointments = appointments.map {
-            it.copy(id = 0L)
+        val importedAppointments = appointments.map { appointment ->
+            appointment.copy(id = 0L)
         }
 
-        appointmentDao.insertAll(normalizedAppointments)
+        database.withTransaction {
+            appointmentDao.deleteAll()
+
+            if (importedAppointments.isNotEmpty()) {
+                appointmentDao.insertAll(importedAppointments)
+            }
+        }
     }
 
     suspend fun getAppointmentsForNotification(
