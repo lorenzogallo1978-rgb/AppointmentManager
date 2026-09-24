@@ -59,7 +59,7 @@ fun AppNavigation(
                 onAddAppointment = {
                     navController.navigate(ADD_ROUTE)
                 },
-                onOpenAppointment = { id ->
+                onOpenAppointment = { id: Long ->
                     navController.navigate("detail/$id")
                 },
                 onExport = onExport,
