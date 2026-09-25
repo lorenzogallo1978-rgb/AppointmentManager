@@ -189,18 +189,17 @@ private fun AppointmentForm(
                 label = { Text(stringResource(R.string.identity_number)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-
-            VisiblePasswordField(
+            VisibleTextField(
                 label = stringResource(R.string.mhrs_password),
                 value = mhrsPassword,
                 onValueChange = { mhrsPassword = it }
             )
-            VisiblePasswordField(
+            VisibleTextField(
                 label = stringResource(R.string.edevlet_password),
                 value = eDevletPassword,
                 onValueChange = { eDevletPassword = it }
             )
-            VisiblePasswordField(
+            VisibleTextField(
                 label = stringResource(R.string.enabiz_password),
                 value = eNabizPassword,
                 onValueChange = { eNabizPassword = it }
@@ -218,12 +217,18 @@ private fun AppointmentForm(
                 notSetText = stringResource(R.string.appointment_date_not_set),
                 onClick = { showAppointmentDatePicker = true }
             )
-            if (validationAttempted && appointmentDate == null) {
-                Text(
-                    text = stringResource(R.string.required_appointment_date_error),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
+            Text(
+                text = stringResource(R.string.appointment_date_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (appointmentDate != null) {
+                TextButton(onClick = { appointmentDate = null }) {
+                    Text(
+                        text = stringResource(R.string.clear_appointment_date),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
 
             OutlinedTextField(
@@ -238,11 +243,10 @@ private fun AppointmentForm(
             Button(
                 onClick = {
                     validationAttempted = true
-                    val selectedAppointmentDate = appointmentDate
-                    if (fullName.isNotBlank() && selectedAppointmentDate != null) {
+                    if (fullName.isNotBlank()) {
                         val shouldKeepNotified =
                             appointment?.notified == true &&
-                                appointment.appointmentDate == selectedAppointmentDate
+                                appointment.appointmentDate == appointmentDate
                         onSave(
                             AppointmentEntity(
                                 id = appointment?.id ?: 0L,
@@ -253,7 +257,7 @@ private fun AppointmentForm(
                                 eNabizPassword = eNabizPassword,
                                 birthDate = birthDate,
                                 notes = notes,
-                                appointmentDate = selectedAppointmentDate,
+                                appointmentDate = appointmentDate,
                                 notified = shouldKeepNotified
                             )
                         )
@@ -289,7 +293,7 @@ private fun AppointmentForm(
 }
 
 @Composable
-private fun VisiblePasswordField(
+private fun VisibleTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit
