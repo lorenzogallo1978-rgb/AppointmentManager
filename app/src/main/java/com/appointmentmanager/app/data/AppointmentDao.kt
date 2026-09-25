@@ -15,7 +15,10 @@ interface AppointmentDao {
         SELECT * FROM appointments
         WHERE fullName LIKE '%' || :query || '%'
            OR identityNumber LIKE '%' || :query || '%'
-        ORDER BY appointmentDate ASC, fullName COLLATE NOCASE ASC
+        ORDER BY
+            CASE WHEN appointmentDate IS NULL THEN 1 ELSE 0 END,
+            appointmentDate ASC,
+            fullName COLLATE NOCASE ASC
         """
     )
     fun observeAppointments(query: String): Flow<List<AppointmentEntity>>
@@ -26,13 +29,22 @@ interface AppointmentDao {
     @Query("SELECT * FROM appointments WHERE id = :id LIMIT 1")
     suspend fun getAppointmentById(id: Long): AppointmentEntity?
 
-    @Query("SELECT * FROM appointments ORDER BY appointmentDate ASC")
+    @Query(
+        """
+        SELECT * FROM appointments
+        ORDER BY
+            CASE WHEN appointmentDate IS NULL THEN 1 ELSE 0 END,
+            appointmentDate ASC,
+            fullName COLLATE NOCASE ASC
+        """
+    )
     suspend fun getAllAppointments(): List<AppointmentEntity>
 
     @Query(
         """
         SELECT * FROM appointments
         WHERE notified = 0
+          AND appointmentDate IS NOT NULL
           AND appointmentDate >= :fromMillis
           AND appointmentDate <= :toMillis
         ORDER BY appointmentDate ASC
