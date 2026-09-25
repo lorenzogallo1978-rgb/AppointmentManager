@@ -16,6 +16,6 @@ data class AppointmentEntity(
     val eNabizPassword: String = "",
     val birthDate: Long? = null,
     val notes: String = "",
-    val appointmentDate: Long,
+    val appointmentDate: Long? = null,
     val notified: Boolean = false
 )
