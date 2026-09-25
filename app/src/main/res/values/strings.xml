@@ -67,6 +67,12 @@
     <string name="days_overdue">مضى %1$d يوم</string>
     <string name="labeled_value">%1$s: %2$s</string>
 
+    <string name="no_appointment">لا يوجد موعد</string>
+    <string name="appointment_date_hint">تاريخ الموعد اختياري. يمكنك تركه فارغاً وإضافته لاحقاً، أو مسحه ثم الضغط على حفظ بعد انتهاء الموعد.</string>
+    <string name="clear_appointment_date">مسح تاريخ الموعد</string>
+    <string name="clear_appointment_confirmation_title">مسح تاريخ الموعد</string>
+    <string name="clear_appointment_confirmation_message">سيتم مسح تاريخ الموعد فقط، وستبقى بيانات الشخص محفوظة. هل تريد المتابعة؟</string>
+
     <string name="notification_channel_name">تذكيرات المواعيد</string>
     <string name="notification_channel_description">إشعارات لتذكيرك بالمواعيد القادمة</string>
     <string name="notification_title">تذكير بموعد</string>
