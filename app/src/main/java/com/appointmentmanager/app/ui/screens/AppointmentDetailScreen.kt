@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.appointmentmanager.app.R
+import com.appointmentmanager.app.data.AppointmentEntity
 import com.appointmentmanager.app.ui.AppointmentViewModel
 import com.appointmentmanager.app.util.DateUtils
 
@@ -55,11 +56,13 @@ fun AppointmentDetailScreen(
     onEdit: () -> Unit,
     onDelete: (Long) -> Unit
 ) {
+    val context = LocalContext.current
     val appointmentFlow = remember(appointmentId) {
         viewModel.observeAppointment(appointmentId)
     }
     val appointment by appointmentFlow.collectAsState(initial = null)
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var showClearDateConfirmation by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -146,8 +149,17 @@ fun AppointmentDetailScreen(
                 )
                 DetailValueRow(
                     label = stringResource(R.string.appointment_date),
-                    value = DateUtils.formatDate(currentAppointment.appointmentDate)
+                    value = currentAppointment.appointmentDate?.let(DateUtils::formatDate)
+                        ?: stringResource(R.string.no_appointment)
                 )
+                if (currentAppointment.appointmentDate != null) {
+                    OutlinedButton(
+                        onClick = { showClearDateConfirmation = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.clear_appointment_date))
+                    }
+                }
                 CopyableDetailRow(
                     label = stringResource(R.string.mhrs_password),
                     value = currentAppointment.mhrsPassword
@@ -168,6 +180,35 @@ fun AppointmentDetailScreen(
                 )
             }
         }
+    }
+
+    if (showClearDateConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showClearDateConfirmation = false },
+            title = { Text(stringResource(R.string.clear_appointment_confirmation_title)) },
+            text = { Text(stringResource(R.string.clear_appointment_confirmation_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showClearDateConfirmation = false
+                        appointment?.let { current ->
+                            clearAppointmentDate(
+                                context = context,
+                                viewModel = viewModel,
+                                appointment = current
+                            )
+                        }
+                    }
+                ) {
+                    Text(stringResource(R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearDateConfirmation = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 
     if (showDeleteConfirmation) {
@@ -192,6 +233,27 @@ fun AppointmentDetailScreen(
             }
         )
     }
+}
+
+private fun clearAppointmentDate(
+    context: Context,
+    viewModel: AppointmentViewModel,
+    appointment: AppointmentEntity
+) {
+    viewModel.saveAppointment(
+        appointment = appointment.copy(
+            appointmentDate = null,
+            notified = false
+        ),
+        onSaved = {},
+        onError = {
+            Toast.makeText(
+                context,
+                context.getString(R.string.save_error),
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    )
 }
 
 @Composable
@@ -235,11 +297,7 @@ private fun CopyableDetailRow(label: String, value: String) {
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-            IconButton(
-                onClick = {
-                    copyToClipboard(context, label, value)
-                }
-            ) {
+            IconButton(onClick = { copyToClipboard(context, label, value) }) {
                 Icon(
                     Icons.Default.ContentCopy,
                     contentDescription = stringResource(R.string.copy)
