@@ -60,6 +60,8 @@ object NotificationHelper {
         context: Context,
         appointment: AppointmentEntity
     ): Boolean {
+        val appointmentDate = appointment.appointmentDate ?: return false
+
         if (
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             ContextCompat.checkSelfPermission(
@@ -94,7 +96,7 @@ object NotificationHelper {
         val message = context.getString(
             R.string.notification_message,
             appointment.fullName,
-            DateUtils.formatDate(appointment.appointmentDate)
+            DateUtils.formatDate(appointmentDate)
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
