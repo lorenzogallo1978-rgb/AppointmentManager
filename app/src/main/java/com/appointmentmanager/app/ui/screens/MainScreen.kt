@@ -78,7 +78,6 @@ fun MainScreen(
                             contentDescription = stringResource(R.string.more_options)
                         )
                     }
-
                     DropdownMenu(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
@@ -189,10 +188,7 @@ fun MainScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(
-                        items = appointments,
-                        key = { it.id }
-                    ) { appointment ->
+                    items(items = appointments, key = { it.id }) { appointment ->
                         AppointmentCard(
                             appointment = appointment,
                             onClick = { onOpenAppointment(appointment.id) }
@@ -209,8 +205,12 @@ private fun AppointmentCard(
     appointment: AppointmentEntity,
     onClick: () -> Unit
 ) {
-    val daysRemaining = DateUtils.daysUntil(appointment.appointmentDate)
-    val remainingText = when {
+    val appointmentDate = appointment.appointmentDate
+    val daysRemaining = appointmentDate?.let(DateUtils::daysUntil)
+    val statusText = when {
+        appointmentDate == null || daysRemaining == null -> {
+            stringResource(R.string.no_appointment)
+        }
         daysRemaining < 0L -> stringResource(
             R.string.days_overdue,
             (-daysRemaining).toInt()
@@ -242,7 +242,8 @@ private fun AppointmentCard(
             )
             InfoLine(
                 label = stringResource(R.string.appointment_date),
-                value = DateUtils.formatDate(appointment.appointmentDate)
+                value = appointmentDate?.let(DateUtils::formatDate)
+                    ?: stringResource(R.string.no_appointment)
             )
             InfoLine(
                 label = stringResource(R.string.mhrs_password),
@@ -258,7 +259,7 @@ private fun AppointmentCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = remainingText,
+                text = statusText,
                 style = MaterialTheme.typography.labelLarge
             )
         }
@@ -278,9 +279,10 @@ private fun InfoLine(label: String, value: String) {
 }
 
 @Composable
-private fun appointmentCardColor(daysRemaining: Long): Color {
+private fun appointmentCardColor(daysRemaining: Long?): Color {
     val colors = MaterialTheme.colorScheme
     return when {
+        daysRemaining == null -> colors.surfaceContainer
         daysRemaining < 0L -> colors.surfaceVariant
         daysRemaining <= 1L -> colors.errorContainer
         daysRemaining == 2L -> colors.tertiaryContainer
